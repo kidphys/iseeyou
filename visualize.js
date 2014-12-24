@@ -5,7 +5,7 @@
         .data(data)
 
         function addRect(group){
-
+            bar.attr('class', function(d){return d.class;});
             bar.append('rect')
             .attr('y', function(d){return y(d.value)})
             .attr('height', function(d){ return height - y(d.value);})
@@ -25,10 +25,12 @@
         });
 
         addRect(bar);
-        group.select('rect')
+
+        group.attr('class', function(d){return d.class;});
+        group.select('rect').transition()
             .attr('y', function(d){return y(d.value)})
             .attr('height', function(d){ return height - y(d.value);})
-        group.select('text')
+        group.select('text').transition()
             .attr('x', barWidth / 2 + 10)
             .attr('y', function(d){return y(d.value) - 10;}) // anonymous works on each value
             .attr('dy', '.75em')

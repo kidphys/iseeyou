@@ -23,7 +23,7 @@
       text-anchor: end;
     }
 
-    .chart rect {
+/*    .chart rect {
       fill: steelblue;
   }
 
@@ -32,7 +32,7 @@
       font: 10px sans-serif;
       text-anchor: end;
   }
-  </style>
+*/  </style>
 </head>
 <body>
     <svg class="chart"></svg>
@@ -50,7 +50,7 @@
     .attr("height", height);
 
 
-    y.domain([0, 6000]);
+    y.domain([0, 10000]);
 
     // setInterval(function(){
     //     function next(){
@@ -68,7 +68,7 @@
 
     function gen_array(size){
         var data = Array.apply(null, new Array(size));
-        return data.map(function(){return {'value': 0};});
+        return data.map(function(){return {'value': 0, 'class': 'buy'};});
     }
 
     load('1224_VND.json', function(stocks){
@@ -86,9 +86,10 @@
             stock = next();
             stock.map(function(d){
                 data[index(d.price, floorPrice)].value = d.quantity;
+                data[index(d.price, floorPrice)].class = d.class;
             });
             update(data);
-        }, 10);
+        }, 100);
     });
 
 </script>
