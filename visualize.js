@@ -1,4 +1,4 @@
-    function update(data){
+    function update(chart, data){
         var barWidth = width / data.length;
 
         var group = chart.selectAll('g') // select group

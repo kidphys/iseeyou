@@ -8,6 +8,7 @@ function load(filename, callback){
 }
 
 function index(price, floor){
+
     return Math.round((price - floor) / 0.1);
 }
 
@@ -16,12 +17,15 @@ function price_step_count(stock){
 }
 
 function reduce_obj(stock){
-    return [
-        {'price': stock.bidPrice01, 'quantity': stock.bidQtty01, 'class': 'buy'},
-        {'price': stock.bidPrice02, 'quantity': stock.bidQtty02, 'class': 'buy'},
-        {'price': stock.bidPrice03, 'quantity': stock.bidQtty03, 'class': 'buy'},
-        {'price': stock.offerPrice01, 'quantity': stock.offerQtty01, 'class': 'sell'},
-        {'price': stock.offerPrice02, 'quantity': stock.offerQtty02, 'class': 'sell'},
-        {'price': stock.offerPrice03, 'quantity': stock.offerQtty03, 'class': 'sell'}
-    ];
+    return {
+        'time': stock.time,
+        'stock':[
+            {'price': stock.bidPrice01, 'quantity': stock.bidQtty01, 'class': 'buy'},
+            {'price': stock.bidPrice02, 'quantity': stock.bidQtty02, 'class': 'buy'},
+            {'price': stock.bidPrice03, 'quantity': stock.bidQtty03, 'class': 'buy'},
+            {'price': stock.offerPrice01, 'quantity': stock.offerQtty01, 'class': 'sell'},
+            {'price': stock.offerPrice02, 'quantity': stock.offerQtty02, 'class': 'sell'},
+            {'price': stock.offerPrice03, 'quantity': stock.offerQtty03, 'class': 'sell'}
+        ]
+    };
 }

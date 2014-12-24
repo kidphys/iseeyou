@@ -23,6 +23,12 @@
       text-anchor: end;
     }
 
+    .time {
+      fill: steelblue;
+      font: 30px sans-serif;
+      text-anchor: end;
+    }
+
 /*    .chart rect {
       fill: steelblue;
   }
@@ -38,9 +44,10 @@
     <svg class="chart"></svg>
     <script src="stock.js" charset="utf-8"></script>
     <script src="visualize.js" charset="utf-8"></script>
+    <script src="moment.min.js" charset="utf-8"></script>
     <script type="text/javascript">
 
-    var width = 960, height = 700;
+    var width = 960, height = 500;
 
     var y = d3.scale.linear()
     .range([height, 0]);
@@ -50,16 +57,14 @@
     .attr("height", height);
 
 
-    y.domain([0, 10000]);
+    // display time
+    chart.append('text')
+        .attr('class', 'time')
+        .attr('x', 150)
+        .attr('y', 200)
+        .text('09:00:00')
 
-    // setInterval(function(){
-    //     function next(){
-    //         return Math.round(Math.random() * 100);
-    //     }
-    //     var data = Array.apply(null, new Array(100));
-    //     var data = data.map(function(){return {'value': next()};});
-    //     update(data);
-    // }, 5);
+    y.domain([0, 10000]);
 
     function type(d) {
       d.value = +d.value; // coerce to number
@@ -75,21 +80,41 @@
         var stock = stocks[0];
         var floorPrice = stock.floorPrice;
         var data = gen_array(price_step_count(stock));
+        var now = moment('09:00:00', 'hh:mm:ss');
+        var timeStep = 30; // seconds
         var i = 0;
         function next(){
+            if (i >= stocks.length){
+                return null;
+            }
+
+            chart.select('.time').text(now.format('hh:mm'));
             var ans = reduce_obj(stocks[i]);
-            i++;
-            return ans;
+            if (moment(ans.time, 'hh:mm:ss') < now){
+                i++;
+                return ans;
+            }
+            else{
+                now.add(timeStep, 'seconds');
+                return null;
+            }
         }
 
         setInterval(function(){
-            stock = next();
-            stock.map(function(d){
-                data[index(d.price, floorPrice)].value = d.quantity;
-                data[index(d.price, floorPrice)].class = d.class;
-            });
-            update(data);
-        }, 100);
+            tick = next();
+            if (tick != null){
+                tick.stock.map(function(d){
+                    try{
+                        data[index(d.price, floorPrice)].value = d.quantity;
+                        data[index(d.price, floorPrice)].class = d.class;
+                    }
+                    catch(e){
+                        console.log(d.price, index(d.price, floorPrice));
+                    }
+                });
+                update(chart, data);
+            }
+        }, 50);
     });
 
 </script>
