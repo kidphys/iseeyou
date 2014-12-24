@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <style>
+    .buy rect {
+        fill: green;
+    }
+
+    .buy text {
+      fill: green;
+      font: 10px sans-serif;
+      text-anchor: end;
+    }
+
+    .sell rect {
+        fill: red;
+    }
+
+    .sell text {
+      fill: red;
+      font: 10px sans-serif;
+      text-anchor: end;
+    }
+
+    .chart rect {
+      fill: steelblue;
+  }
+
+  .chart text {
+      fill: steelblue;
+      font: 10px sans-serif;
+      text-anchor: end;
+  }
+  </style>
+</head>
+<body>
+    <svg class="chart"></svg>
+    <script src="stock.js" charset="utf-8"></script>
+    <script src="visualize.js" charset="utf-8"></script>
+    <script type="text/javascript">
+
+    var width = 960, height = 700;
+
+    var y = d3.scale.linear()
+    .range([height, 0]);
+
+    var chart = d3.select(".chart")
+    .attr("width", width)
+    .attr("height", height);
+
+
+    y.domain([0, 6000]);
+
+    // setInterval(function(){
+    //     function next(){
+    //         return Math.round(Math.random() * 100);
+    //     }
+    //     var data = Array.apply(null, new Array(100));
+    //     var data = data.map(function(){return {'value': next()};});
+    //     update(data);
+    // }, 5);
+
+    function type(d) {
+      d.value = +d.value; // coerce to number
+      return d;
+    }
+
+    function gen_array(size){
+        var data = Array.apply(null, new Array(size));
+        return data.map(function(){return {'value': 0};});
+    }
+
+    load('1224_VND.json', function(stocks){
+        var stock = stocks[0];
+        var floorPrice = stock.floorPrice;
+        var data = gen_array(price_step_count(stock));
+        var i = 0;
+        function next(){
+            var ans = reduce_obj(stocks[i]);
+            i++;
+            return ans;
+        }
+
+        setInterval(function(){
+            stock = next();
+            stock.map(function(d){
+                data[index(d.price, floorPrice)].value = d.quantity;
+            });
+            update(data);
+        }, 10);
+    });
+
+</script>
+</body>
+</html>
