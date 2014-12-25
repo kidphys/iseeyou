@@ -6,26 +6,33 @@
 
     .match rect{
         fill: blue;
-        opacity: 0.8;
+        opacity: 0.6;
     }
 
-    .buy rect {
+    .match text{
+        opacity: 0.6;
+        fill: blue;
+        font: 10px sans-serif;
+        text-anchor: end;
+    }
+
+    .bidOffer .buy rect {
         fill: green;
-        opacity: 0.8;
+        opacity: 0.9;
     }
 
-    .buy text {
+    .bidOffer .buy text {
       fill: green;
       font: 10px sans-serif;
       text-anchor: end;
     }
 
-    .sell rect {
+    .bidOffer .sell rect {
         fill: red;
-        opacity: 0.8;
+        opacity: 0.9;
     }
 
-    .sell text {
+    .bidOffer .sell text {
       fill: red;
       font: 10px sans-serif;
       text-anchor: end;
@@ -129,16 +136,24 @@
 
 
         var data = gen_array(price_step_count(stocks[0]))
-        var match = gen_array(price_step_count(stocks[0]))
-        update(chart, data);
+        var matchData = gen_array(price_step_count(stocks[0]))
+
+        var bidOfferChart = chart.append('g')
+                            .attr('class', 'bidOffer');
+
+        var matchChart = chart.append('g')
+                            .attr('class', 'match');
+
+        update(bidOfferChart, data);
+        update(matchChart, matchData);
 
         setInterval(function(){
             tick = iter.next();
             chart.select('.time').text(tick.time.format('hh:mm'));
             if (tick.stock != null){
-                data.map(function(d){
-                    d.value = 0;
-                });
+                // clear
+                data.map(function(d){d.value = 0;});
+                matchData.map(function(d){d.value = 0});
 
                 reduce_obj(tick.stock).stock.map(function(d){
                     try{
@@ -149,7 +164,13 @@
                         console.log(d.price, index(d.price, floorPrice));
                     }
                 });
-                update(chart, data);
+
+                var matchInfo = reduce_obj(tick.stock).match;
+                matchData[index(matchInfo.price, floorPrice)].value = matchInfo.quantity;
+                matchData[index(matchInfo.price, floorPrice)].class = 'match';
+
+                update(bidOfferChart, data);
+                update(matchChart, matchData);
             }
         }, 300);
     });

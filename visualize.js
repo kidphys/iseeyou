@@ -36,7 +36,7 @@
             .attr('x', barWidth / 2 + 10)
             .attr('y', function(d){return y(d.value) - 10;}) // scale value to auto-fit
             .attr('dy', '.75em')
-            .text(function(d){return d.value;});
+            .text(function(d){if(d.value > 0) {return d.value;} else return '';});
         }
 
 
@@ -50,7 +50,7 @@
             .attr('x', barWidth / 2 + 10)
             .attr('y', function(d){return y(d.value) - 10;}) // anonymous works on each value
             .attr('dy', '.75em')
-            .text(function(d){return d.value;});
+            .text(function(d){if(d.value > 0) {return d.value;} else return '';});
 
         group.exit().remove();
     }

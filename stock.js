@@ -32,6 +32,10 @@ function reduce_obj(stock){
             {'price': stock.offerPrice01, 'quantity': stock.offerQtty01, 'class': 'sell'},
             {'price': stock.offerPrice02, 'quantity': stock.offerQtty02, 'class': 'sell'},
             {'price': stock.offerPrice03, 'quantity': stock.offerQtty03, 'class': 'sell'}
-        ]
+        ],
+        'match': {
+            'price': stock.matchPrice,
+            'quantity': stock.matchQtty
+        }
     };
 }
