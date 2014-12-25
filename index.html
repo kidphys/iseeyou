@@ -23,22 +23,24 @@
       text-anchor: end;
     }
 
-    .time {
+    .time,.symbol{
       fill: steelblue;
-      font: 30px sans-serif;
+      font: 70px sans-serif;
       text-anchor: end;
     }
 
-/*    .chart rect {
-      fill: steelblue;
-  }
-
-  .chart text {
-      fill: steelblue;
+    /* this is for the axis */
+    .axis text {
       font: 10px sans-serif;
-      text-anchor: end;
-  }
-*/  </style>
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+</style>
 </head>
 <body>
     <svg class="chart"></svg>
@@ -47,24 +49,24 @@
     <script src="moment.min.js" charset="utf-8"></script>
     <script type="text/javascript">
 
-    var width = 960, height = 500;
+    var width = 1280, height = 500;
 
     var y = d3.scale.linear()
     .range([height, 0]);
 
     var chart = d3.select(".chart")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height + 20);
 
 
     // display time
     chart.append('text')
         .attr('class', 'time')
-        .attr('x', 150)
-        .attr('y', 200)
+        .attr('x', 300)
+        .attr('y', 250)
         .text('09:00:00')
 
-    y.domain([0, 10000]);
+    y.domain([0, 40000]);
 
     function type(d) {
       d.value = +d.value; // coerce to number
@@ -76,44 +78,44 @@
         return data.map(function(){return {'value': 0, 'class': 'buy'};});
     }
 
-    load('1224_VND.json', function(stocks){
+    load('data/24_KBC', function(stocks){
+        chart.append('text')
+            .attr('class', 'symbol')
+            .attr('x', 300)
+            .attr('y', 310)
+            .text(stocks[0].code);
+
         var floorPrice = stocks[0].floorPrice;
+        var ceilingPrice = stocks[0].ceilingPrice;
 
         var settings = {
             startTime: '09:00:00',
             timeFormat: 'hh:mm:ss',
             timeStep: 30, // seconds
+            breakTime: {
+                format: 'hh:mm',
+                start: '11:45',
+                duration: 60
+            }
         }
+
+        var prices = [];
+        for(var i = floorPrice; i < ceilingPrice; i += 0.1){
+            prices.push(i.toFixed(1));
+        }
+        addAxis(chart, width, height, prices);
 
         var iter = virtual_play(stocks, settings);
         var data = gen_array(price_step_count(stocks[0]))
-        // var stock = stocks[0];
-        // var floorPrice = stock.floorPrice;
-        // var data = gen_array(price_step_count(stock));
-        // var now = moment('09:00:00', 'hh:mm:ss');
-        // var timeStep = 30; // seconds
-        // var i = 0;
-        // function next(){
-        //     if (i >= stocks.length){
-        //         return null;
-        //     }
-
-        //     chart.select('.time').text(now.format('hh:mm'));
-        //     var ans = reduce_obj(stocks[i]);
-        //     if (moment(ans.time, 'hh:mm:ss') < now){
-        //         i++;
-        //         return ans;
-        //     }
-        //     else{
-        //         now.add(timeStep, 'seconds');
-        //         return null;
-        //     }
-        // }
 
         setInterval(function(){
             tick = iter.next();
             chart.select('.time').text(tick.time.format('hh:mm'));
             if (tick.stock != null){
+                data.map(function(d){
+                    d.value = 0;
+                });
+
                 reduce_obj(tick.stock).stock.map(function(d){
                     try{
                         data[index(d.price, floorPrice)].value = d.quantity;
