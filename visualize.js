@@ -1,7 +1,7 @@
     function addAxis(chart, width, height, prices){
         var x = d3.scale.ordinal()
                 .domain(prices)
-                .rangeRoundBands([0, width]);
+                .rangeBands([0, width]);
         var xAxis = d3.svg.axis()
                     .scale(x)
                     .orient("bottom");
@@ -41,10 +41,10 @@
         addRect(bar);
 
         group.attr('class', function(d){return 'bar ' + d.class;});
-        group.select('rect') //.transition()
+        group.select('rect').transition().duration(300)
             .attr('y', function(d){return y(d.value)})
             .attr('height', function(d){ return height - y(d.value);})
-        group.select('text') //.transition()
+        group.select('text').transition().duration(300)
             .attr('x', barWidth / 2 + 10)
             .attr('y', function(d){return y(d.value) - 10;}) // anonymous works on each value
             .attr('dy', '.75em')

@@ -66,7 +66,7 @@
         .attr('y', 250)
         .text('09:00:00')
 
-    y.domain([0, 40000]);
+
 
     function type(d) {
       d.value = +d.value; // coerce to number
@@ -78,35 +78,50 @@
         return data.map(function(){return {'value': 0, 'class': 'buy'};});
     }
 
-    load('data/24_KBC', function(stocks){
+    load('data/25_VIX', function(stocks){
+
+        // calculate max quantity to scale the chart
+        var ticks = stocks.map(function(d){return reduce_obj(d).stock});
+        ticks = [].concat.apply([], ticks);
+        ticks = ticks.map(function(t){return t.quantity;});
+        var maxQtty = Math.max.apply(Math, ticks);
+        y.domain([0, maxQtty + 1000]);
+
+        // display symbol
         chart.append('text')
             .attr('class', 'symbol')
             .attr('x', 300)
             .attr('y', 310)
             .text(stocks[0].code);
 
+        // used for setting axis and determine bar index
         var floorPrice = stocks[0].floorPrice;
         var ceilingPrice = stocks[0].ceilingPrice;
 
-        var settings = {
-            startTime: '09:00:00',
-            timeFormat: 'hh:mm:ss',
-            timeStep: 30, // seconds
-            breakTime: {
-                format: 'hh:mm',
-                start: '11:45',
-                duration: 60
-            }
-        }
-
+        // setting axis
         var prices = [];
         for(var i = floorPrice; i < ceilingPrice; i += 0.1){
             prices.push(i.toFixed(1));
         }
         addAxis(chart, width, height, prices);
 
+
+        // setup virtual player
+        var settings = {
+            startTime: '09:00:00',
+            timeFormat: 'hh:mm:ss',
+            timeStep: 300, // seconds
+            breakTime: {
+                format: 'hh:mm',
+                start: '11:45',
+                duration: 60
+            }
+        }
         var iter = virtual_play(stocks, settings);
+
+
         var data = gen_array(price_step_count(stocks[0]))
+        update(chart, data);
 
         setInterval(function(){
             tick = iter.next();
@@ -127,7 +142,7 @@
                 });
                 update(chart, data);
             }
-        }, 50);
+        }, 300);
     });
 
 </script>
