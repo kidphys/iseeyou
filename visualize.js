@@ -38,3 +38,53 @@
 
         group.exit().remove();
     }
+
+    /**
+     * [virtual_play description]
+     * @param  {[type]} data     [description]
+     * @param  {[type]} settings
+     *          .startTime: str time
+                .timeFormat: used to parse start_time & data[i].time
+                .timeStep: how much to move forward in seconds
+                .process: optional function to process data before yield
+     * @return {[type]}          [description]
+     */
+    function virtual_play(data, settings){
+        var process = function(d){return d;}
+        if (settings.process != null){
+            process = settings.process;
+        }
+
+        var timeStep = settings.timeStep;
+        var stock = process(data[0]);
+        var now = moment(settings.start_time, settings.time_format);
+        var i = 0;
+        var iter = {
+            next: function(){
+                if (i >= data.length){
+                    return {
+                        stock: null,
+                        time: moment(now)
+                    };
+                }
+
+                chart.select('.time').text(now.format('hh:mm'));
+                var ans = process(data[i]);
+                if (moment(ans.time, 'hh:mm:ss') < now){
+                    i++;
+                    return {
+                        stock: ans,
+                        time: moment(now)
+                    };
+                }
+                else{
+                    now.add(timeStep, 'seconds');
+                    return {
+                        stock: null,
+                        time: moment(now)
+                    };
+                }
+            },
+        };
+        return iter;
+    }

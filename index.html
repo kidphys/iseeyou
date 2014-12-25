@@ -77,33 +77,44 @@
     }
 
     load('1224_VND.json', function(stocks){
-        var stock = stocks[0];
-        var floorPrice = stock.floorPrice;
-        var data = gen_array(price_step_count(stock));
-        var now = moment('09:00:00', 'hh:mm:ss');
-        var timeStep = 30; // seconds
-        var i = 0;
-        function next(){
-            if (i >= stocks.length){
-                return null;
-            }
+        var floorPrice = stocks[0].floorPrice;
 
-            chart.select('.time').text(now.format('hh:mm'));
-            var ans = reduce_obj(stocks[i]);
-            if (moment(ans.time, 'hh:mm:ss') < now){
-                i++;
-                return ans;
-            }
-            else{
-                now.add(timeStep, 'seconds');
-                return null;
-            }
+        var settings = {
+            startTime: '09:00:00',
+            timeFormat: 'hh:mm:ss',
+            timeStep: 30, // seconds
         }
 
+        var iter = virtual_play(stocks, settings);
+        var data = gen_array(price_step_count(stocks[0]))
+        // var stock = stocks[0];
+        // var floorPrice = stock.floorPrice;
+        // var data = gen_array(price_step_count(stock));
+        // var now = moment('09:00:00', 'hh:mm:ss');
+        // var timeStep = 30; // seconds
+        // var i = 0;
+        // function next(){
+        //     if (i >= stocks.length){
+        //         return null;
+        //     }
+
+        //     chart.select('.time').text(now.format('hh:mm'));
+        //     var ans = reduce_obj(stocks[i]);
+        //     if (moment(ans.time, 'hh:mm:ss') < now){
+        //         i++;
+        //         return ans;
+        //     }
+        //     else{
+        //         now.add(timeStep, 'seconds');
+        //         return null;
+        //     }
+        // }
+
         setInterval(function(){
-            tick = next();
-            if (tick != null){
-                tick.stock.map(function(d){
+            tick = iter.next();
+            chart.select('.time').text(tick.time.format('hh:mm'));
+            if (tick.stock != null){
+                reduce_obj(tick.stock).stock.map(function(d){
                     try{
                         data[index(d.price, floorPrice)].value = d.quantity;
                         data[index(d.price, floorPrice)].class = d.class;

@@ -1,4 +1,10 @@
+// [10:59:00 AM] khongthanhhoa: vix
+// [10:59:02 AM] khongthanhhoa: pet
+// [10:59:03 AM] khongthanhhoa: gtn
+// [10:59:04 AM] khongthanhhoa: ssi
+// [10:59:05 AM] khongthanhhoa: kbc
 function load(filename, callback){
+
     d3.json(filename, function(err, json){
         if (err) return console.error('Data cant be loaded');
 
