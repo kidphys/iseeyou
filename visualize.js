@@ -1,7 +1,9 @@
     function addAxis(chart, width, height, prices){
+        var barWidth = width / prices.length;
         var x = d3.scale.ordinal()
                 .domain(prices)
-                .rangeBands([0, width]);
+                .rangeRoundBands([0 - barWidth/2, width - barWidth/2]);
+                // .rangeBands([0 + barWidth/2, width+ barWidth/2]);
         var xAxis = d3.svg.axis()
                     .scale(x)
                     .orient("bottom");

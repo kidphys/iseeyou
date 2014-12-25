@@ -3,8 +3,15 @@
 <head>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <style>
+
+    .match rect{
+        fill: blue;
+        opacity: 0.8;
+    }
+
     .buy rect {
         fill: green;
+        opacity: 0.8;
     }
 
     .buy text {
@@ -15,6 +22,7 @@
 
     .sell rect {
         fill: red;
+        opacity: 0.8;
     }
 
     .sell text {
@@ -78,7 +86,7 @@
         return data.map(function(){return {'value': 0, 'class': 'buy'};});
     }
 
-    load('data/25_VIX', function(stocks){
+    load('data/25_SSI', function(stocks){
 
         // calculate max quantity to scale the chart
         var ticks = stocks.map(function(d){return reduce_obj(d).stock});
@@ -121,6 +129,7 @@
 
 
         var data = gen_array(price_step_count(stocks[0]))
+        var match = gen_array(price_step_count(stocks[0]))
         update(chart, data);
 
         setInterval(function(){
