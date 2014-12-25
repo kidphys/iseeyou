@@ -2,7 +2,7 @@
 <html>
 <head>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <style>
+    <style type='text/css'>
 
     .match rect{
         fill: blue;
@@ -93,7 +93,7 @@
         return data.map(function(){return {'value': 0, 'class': 'buy'};});
     }
 
-    load('data/25_SSI', function(stocks){
+    load('data/25_VIX', function(stocks){
 
         // calculate max quantity to scale the chart
         var ticks = stocks.map(function(d){return reduce_obj(d).stock});
@@ -157,20 +157,29 @@
 
                 reduce_obj(tick.stock).stock.map(function(d){
                     try{
-                        data[index(d.price, floorPrice)].value = d.quantity;
-                        data[index(d.price, floorPrice)].class = d.class;
+                        if(d.price > 0){
+                            data[index(d.price, floorPrice)].value = d.quantity;
+                            data[index(d.price, floorPrice)].class = d.class;
+                        }
                     }
                     catch(e){
-                        console.log(d.price, index(d.price, floorPrice));
+                        console.error('Error while parsing bid/offer info', d.price, index(d.price, floorPrice));
                     }
                 });
 
-                var matchInfo = reduce_obj(tick.stock).match;
-                matchData[index(matchInfo.price, floorPrice)].value = matchInfo.quantity;
-                matchData[index(matchInfo.price, floorPrice)].class = 'match';
-
                 update(bidOfferChart, data);
-                update(matchChart, matchData);
+
+                try{
+                    var matchInfo = reduce_obj(tick.stock).match;
+                    if (matchInfo.price > 0){
+                        matchData[index(matchInfo.price, floorPrice)].value = matchInfo.quantity;
+                        matchData[index(matchInfo.price, floorPrice)].class = 'match';
+                        update(matchChart, matchData);
+                    }
+                }
+                catch(e){
+                    console.error('Error while parsing matchInfo', e, matchInfo);
+                }
             }
         }, 300);
     });
