@@ -59,9 +59,9 @@
 </head>
 <body>
     <svg class="chart"></svg>
-    <script src="stock.js" charset="utf-8"></script>
-    <script src="visualize.js" charset="utf-8"></script>
-    <script src="moment.min.js" charset="utf-8"></script>
+    <script src="{{url_for('static', filename='stock.js')}}" charset="utf-8"></script>
+    <script src="{{url_for('static', filename='visualize.js')}}" charset="utf-8"></script>
+    <script src="{{url_for('static', filename='moment.min.js')}}" charset="utf-8"></script>
     <script type="text/javascript">
 
     var width = 1280, height = 500;
@@ -93,7 +93,7 @@
         return data.map(function(){return {'value': 0, 'class': 'buy'};});
     }
 
-    load('data/25_VIX', function(stocks){
+    load("{{url_for('static', filename='data/25_VIX')}}", function(stocks){
 
         // calculate max quantity to scale the chart
         var ticks = stocks.map(function(d){return reduce_obj(d).stock});
